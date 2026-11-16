@@ -18,7 +18,9 @@ into a dedicated Blender collection with their PBR materials intact.
 
 ## Use
 
-1. Keep the hosted server URL or enter your own compatible endpoint.
+1. Enter the **Server URL** of your Dive 3D Gen server (for example
+   `https://YOUR-WORKSPACE--dive-3d-gen.modal.run`). The field starts empty;
+   generation is refused until it is filled in.
 2. Enter an API key. Request one from the hosted server operator, or create one
    after deploying your own server.
 3. Select SF3D, TRELLIS, or Hunyuan and a quality preset.
@@ -34,8 +36,9 @@ SF3D and Hunyuan require an image. TRELLIS accepts an image, a prompt, or both.
 
 ## Server options
 
-The default endpoint is operated by Dive Smart Factory. API keys are required
-because every generation uses the operator's GPU budget. To self-host, deploy
+The add-on ships without a default endpoint (since 1.0.2). Ask your server
+operator for the URL and an API key; keys are required because every
+generation uses the operator's GPU budget. To self-host, deploy
 [dive-3d-gen-server](https://github.com/Rod15greo/dive-3d-gen-server) and put
 its endpoint in the add-on panel.
 

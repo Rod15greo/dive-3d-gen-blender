@@ -3,7 +3,7 @@
 bl_info = {
     "name": "Dive 3D Gen",
     "author": "Dive Smart Factory",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (4, 2, 0),
     "location": "View3D > Sidebar > Dive 3D",
     "description": "Generate and import textured 3D assets through Dive 3D Gen",
@@ -26,7 +26,9 @@ from bpy.props import BoolProperty, EnumProperty, PointerProperty, StringPropert
 from bpy.types import AddonPreferences, Operator, Panel, PropertyGroup
 
 
-DEFAULT_SERVER_URL = "https://rodmeca150102--dive-3d-gen.modal.run"
+# No default endpoint: every user must point the add-on at their own server.
+DEFAULT_SERVER_URL = ""
+SERVER_URL_HINT = "https://YOUR-WORKSPACE--dive-3d-gen.modal.run"
 POLL_SECONDS = 5.0
 MAX_WAIT_SECONDS = 20 * 60
 GENERATED_COLLECTION = "Dive 3D Gen"
@@ -324,6 +326,8 @@ class DIVE3DGEN_Preferences(AddonPreferences):
         layout = self.layout
         layout.prop(self, "server_url")
         layout.prop(self, "api_key")
+        if not self.server_url.strip():
+            layout.label(text=f"Enter your Dive 3D Gen server URL, e.g. {SERVER_URL_HINT}", icon="ERROR")
 
 
 class DIVE3DGEN_Settings(PropertyGroup):
@@ -375,7 +379,14 @@ class DIVE3DGEN_OT_generate(Operator):
         image_path = bpy.path.abspath(settings.image_path) if settings.image_path else ""
         prompt = settings.prompt.strip()
 
-        if not server_url or not api_key:
+        if not server_url:
+            self.report(
+                {"ERROR"},
+                "Server URL is empty. Enter the URL of your Dive 3D Gen server "
+                f"(e.g. {SERVER_URL_HINT}).",
+            )
+            return {"CANCELLED"}
+        if not api_key:
             self.report({"ERROR"}, "Configure Server URL and API Key first.")
             return {"CANCELLED"}
         if image_path and not Path(image_path).is_file():
@@ -460,6 +471,8 @@ class DIVE3DGEN_PT_panel(Panel):
         config.label(text="Connection", icon="URL")
         config.prop(preferences, "server_url")
         config.prop(preferences, "api_key")
+        if not preferences.server_url.strip():
+            config.label(text="Server URL required (ask your server operator).", icon="ERROR")
 
         form = layout.box()
         form.label(text="Generation", icon="MESH_UVSPHERE")
